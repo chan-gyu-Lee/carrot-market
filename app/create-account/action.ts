@@ -3,38 +3,11 @@ import { PASSWORD_MIN_LENGTH, PASSWORD_REGEX } from "@/lib/constants";
 import db from "@/lib/db";
 import { z } from "zod";
 import bcrypt from "bcrypt";
-import { getIronSession } from "iron-session";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import getSession from "@/lib/session";
 
-const checkUniqueUsername = async (username: string) => {
-  const user = await db.user.findUnique({
-    where: {
-      username: username,
-    },
-    select: {
-      // select가 없으면 데이터가 전부 다나오고 ,select를 하면 원하는 값만 나옴
-      id: true,
-    },
-  });
-  // email이 있으면 true를 반환, 하지만 username이 있으면 안되니까 !로 false 반환
-  return !Boolean(user);
-};
 const checkUsername = (username: string) => {
   return !username.includes("오리");
-};
-
-const checkUniqueEmail = async (email: string) => {
-  const userEmail = await db.user.findUnique({
-    where: {
-      email: email,
-    },
-    select: {
-      id: true,
-    },
-  });
-  return !Boolean(userEmail);
 };
 
 const checkPassword = ({
@@ -59,19 +32,50 @@ const formSchema = z
       .trim() // 공백 제거
       .toLowerCase() // 소문자 변환
       //   .transform((username) => `🦆${username}`) // 데이터 값을 변경시켜줌
-      .refine(checkUsername, "이름에 오리가 들어가면 안돼")
-      .refine(checkUniqueUsername, "이미 사용중인 username 입니다."),
-    email: z
-      .string()
-      .email()
-      .toLowerCase()
-      .refine(checkUniqueEmail, "이미 사용중인 email입니다."),
+      .refine(checkUsername, "이름에 오리가 들어가면 안돼"),
+    email: z.string().email().toLowerCase(),
+
     password: z.string().min(PASSWORD_MIN_LENGTH),
     // 비밀번호 정규식
     //   .regex(PASSWORD_REGEX, "영어, 특문, 숫자 있어야 됨"),
     confirmPassword: z.string().min(PASSWORD_MIN_LENGTH),
   })
   // form 전체에 대한 vaild지만 메시지와 path를 지정해서 특정 form에 에러 메시지를 줄 수 있다.
+
+  .superRefine(async (data, ctx) => {
+    const user = await db.user.findUnique({
+      where: { username: data.username },
+      select: { id: true },
+    });
+    if (user) {
+      ctx.addIssue({
+        code: "custom",
+        message: "이미 사용중인 username입니다.",
+        path: ["username"],
+        // 치명적인 이슈임을 선언
+        fatal: true,
+      });
+      // fatal : true이고, return z.NEVER를 하면 superRefine 밑에 있는 일반 refine은 작동하지 않음.
+      return z.NEVER;
+    }
+  })
+  .superRefine(async (data, ctx) => {
+    const user = await db.user.findUnique({
+      where: { email: data.email },
+      select: { id: true },
+    });
+    if (user) {
+      ctx.addIssue({
+        code: "custom",
+        message: "이미 사용중인 email입니다.",
+        path: ["email"],
+        // 치명적인 이슈임을 선언
+        fatal: true,
+      });
+      // fatal : true이고, return z.NEVER를 하면 superRefine 밑에 있는 일반 refine은 작동하지 않음.
+      return z.NEVER;
+    }
+  })
   .refine(checkPassword, { message: "비번이 다름", path: ["password"] });
 
 export async function createAccount(prevState: any, formData: FormData) {
@@ -83,8 +87,6 @@ export async function createAccount(prevState: any, formData: FormData) {
   };
 
   const result = await formSchema.safeParseAsync(data);
-  console.log({ result });
-  console.log(cookies());
 
   // 양식에 안맞음
   if (!result.success) {
