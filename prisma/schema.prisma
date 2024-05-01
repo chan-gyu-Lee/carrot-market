@@ -1,0 +1,37 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         Int        @id @default(autoincrement())
+  username   String     @unique
+  email      String?    @unique
+  password   String?
+  phone      String?    @unique
+  github_id  String?    @unique
+  avatar     String?
+  created_at DateTime   @default(now())
+  updated_at DateTime   @updatedAt
+  SMSToken   SMSToken[]
+}
+
+model SMSToken {
+  id         Int      @id @default(autoincrement())
+  token      String   @unique
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  // user의 타입은 User라는 것만 입력하면 나머지는 알아서 추가해 줌
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     Int
+}
