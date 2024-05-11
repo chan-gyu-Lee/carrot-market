@@ -1,14 +1,14 @@
-'use client'
-import Input from '@/components/form/input'
-import Button from '@/components/form/button'
-import { useFormState } from 'react-dom'
-import { sms } from './action'
+"use client";
+import Input from "@/components/input";
+import Button from "@/components/button";
+import { useFormState } from "react-dom";
+import { sms } from "./action";
 
 // useFormState의 초기값
-const initialState = { token: false, error: undefined }
+const initialState = { token: false, error: undefined };
 
 export default function SmsLogin() {
-  const [state, action] = useFormState(sms, initialState)
+  const [state, action] = useFormState(sms, initialState);
   return (
     <div className="flex flex-col gap-10 px-6 py-8">
       <div className="flex flex-col gap-2 *:font-medium">
@@ -25,7 +25,8 @@ export default function SmsLogin() {
             type="number"
             min={100000}
             max={999999}
-            key={'phone'} // 키 값으로 구분을 해줘야 함.
+            errors={state.error?.formErrors}
+            key={"phone"} // 키 값으로 구분을 해줘야 함.
           />
         ) : (
           /* 최초 입력 시 state.token이 false이기 때문에 전화번호 input이 나옴. */
@@ -35,12 +36,12 @@ export default function SmsLogin() {
             required={true}
             type="text"
             errors={state.error?.formErrors}
-            key={'token'} // 키 값으로 구분을 해줘야 함.
+            key={"token"} // 키 값으로 구분을 해줘야 함.
           />
         )}
 
-        <Button text={state.token ? '로그인' : '토큰받기'} />
+        <Button text={state.token ? "로그인" : "토큰받기"} />
       </form>
     </div>
-  )
+  );
 }

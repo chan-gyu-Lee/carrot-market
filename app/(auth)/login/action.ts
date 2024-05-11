@@ -5,6 +5,7 @@ import { z } from "zod";
 import bcrypt from "bcrypt";
 import getSession from "@/lib/session";
 import { redirect } from "next/navigation";
+import getLogin from "@/lib/login";
 
 // 1. zod로 email이 유효한지 확인.
 const checkUserEmail = async (email: string) => {
@@ -55,11 +56,7 @@ export const login = async (prevState: any, formData: FormData) => {
     console.log({ ok });
 
     if (ok) {
-      const session = await getSession();
-      session.id = user!.id;
-      await session.save();
-      // 로그인하기 -> redirect("/profile")
-      redirect("/profile");
+      if (user) await getLogin(user.id);
     } else {
       return {
         fieldErrors: {

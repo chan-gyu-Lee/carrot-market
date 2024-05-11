@@ -1,14 +1,14 @@
-'use client'
-import Input from '@/components/form/input'
-import Button from '@/components/form/button'
-import SocialLogin from '@/components/form/social-login'
-import { useFormState } from 'react-dom'
-import { createAccount } from './action'
-import { PASSWORD_MIN_LENGTH } from '@/lib/constants'
+"use client";
+import Input from "@/components/input";
+import Button from "@/components/button";
+import SocialLogin from "@/components/social-login";
+import { useFormState } from "react-dom";
+import { createAccount } from "./action";
+import { PASSWORD_MIN_LENGTH } from "@/lib/constants";
 
 export default function CreateAccount() {
-  const [state, action] = useFormState(createAccount, null)
-  console.log({ state })
+  const [state, action] = useFormState(createAccount, null);
+  console.log({ state });
 
   return (
     <div className="flex flex-col gap-10 px-6 py-8">
@@ -26,7 +26,13 @@ export default function CreateAccount() {
           minLength={3}
           maxLength={10}
         />
-        <Input name="email" placeholder="Email" required={true} type="email" errors={state?.fieldErrors.email} />
+        <Input
+          name="email"
+          placeholder="Email"
+          required={true}
+          type="email"
+          errors={state?.fieldErrors.email}
+        />
         <Input
           name="password"
           placeholder="password"
@@ -47,5 +53,5 @@ export default function CreateAccount() {
       </form>
       <SocialLogin />
     </div>
-  )
+  );
 }
