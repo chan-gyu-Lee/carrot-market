@@ -21,7 +21,7 @@ export default function ListProduct({
     <Link href={`/products/${id}`} className="flex gap-5">
       <div className="relative size-28 rounded-xl overflow-hidden">
         {/* 이미지의 크기를 설정해야 함. next.js에서는 img 태그가 아닌 Image 태그를 사용해야 함.  */}
-        <Image fill src={photo} alt={title} />
+        <Image fill className="object-cover" src={photo} alt={title} />
       </div>
       <div className="flex flex-col gap-1 *:text-white">
         <span className="text-lg">{title}</span>

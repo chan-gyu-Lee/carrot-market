@@ -10,10 +10,11 @@ interface DeleteButtonProps {
 
 export default function DeleteButton({
   productId,
-  deleteFunction,
+  deleteFunction, // 삭제 함수
 }: Readonly<DeleteButtonProps>) {
   const [isDelete, setIsDelete] = useState(false);
 
+  // alert 닫기
   const handleClose = useCallback(() => {
     setIsDelete(false);
   }, []);

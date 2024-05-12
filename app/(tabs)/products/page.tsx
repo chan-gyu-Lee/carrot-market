@@ -1,7 +1,8 @@
-import ListProduct from "@/components/list-product";
+import ProductList from "@/components/product-list";
 import db from "@/lib/db";
+import { Prisma } from "@prisma/client";
 
-async function getProducts() {
+async function getInitialProducts() {
   const products = await db.product.findMany({
     select: {
       title: true,
@@ -10,19 +11,27 @@ async function getProducts() {
       photo: true,
       id: true,
     },
+    // 처음 2개만 가져오기
+    take: 2,
+    orderBy: {
+      created_at: "desc",
+    },
   });
   return products;
 }
 
+// prisma의 return 타입을 가지고 자동으로 타입스크립트가 인지하게 만들기
+export type InitialProductsType = Prisma.PromiseReturnType<
+  typeof getInitialProducts
+>;
+
 export default async function Products() {
-  const products = await getProducts();
-  console.log(products);
+  const initailProducts: InitialProductsType = await getInitialProducts();
 
   return (
-    <div className="p-5 flex flex-col gap-5">
-      {products.map((product, idx: number) => (
-        <ListProduct key={product.id} {...product} />
-      ))}
+    <div>
+      {/* use client를 최대한 피하기 위함. */}
+      <ProductList initialProduct={initailProducts} />
     </div>
   );
 }

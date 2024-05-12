@@ -21,6 +21,7 @@ async function getIsOwner(userId: number) {
   return false;
 }
 
+// product와 연결되어 있는 user table의 정보도 가져오기 위해 include 사용
 async function getProduct(id: number) {
   const product = await db.product.findUnique({
     where: {
@@ -61,10 +62,10 @@ export default async function ProductDetail({
         <Image fill src={product.photo} alt={product.title} />
       </div>
       <div className="p-5 flex items-center gap-3 border-b border-neutral-700">
-        <div className="size-10 rounded-full">
+        <div className="size-10 overflow-hidden rounded-full">
           {product.user.avatar !== null ? (
             <Image
-              className="rounded-full"
+              className="object-cover"
               src={product.user.avatar}
               alt={product.user.username}
               width={40}
@@ -86,9 +87,10 @@ export default async function ProductDetail({
         <span className="font-semibold text-lg">
           {formatToWon(product.price)}원
         </span>
-        {isOwner ? (
+        {isOwner ? ( // 주인이면 삭제 가능 채팅 필요
           <DeleteButton productId={id} deleteFunction={deleteProduct} />
         ) : (
+          // 주인 아니면 사야되서 채팅가능
           <Link
             className="bg-orange-500 p-5 py-2.5 rounded-md font-semibold text-white"
             href={``}

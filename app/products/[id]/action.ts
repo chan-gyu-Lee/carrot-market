@@ -7,7 +7,7 @@ import db from "@/lib/db";
 export const deleteProduct = async (id: number) => {
   const result = await db.product.deleteMany({
     where: {
-      id: 2, // 일부러 실패하게 했음
+      id: 999, // 일부러 실패하게 했음
     },
   });
   return result.count;
