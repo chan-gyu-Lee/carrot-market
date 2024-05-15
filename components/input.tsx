@@ -1,8 +1,8 @@
-import { InputHTMLAttributes } from 'react'
+import { InputHTMLAttributes } from "react";
 
 interface InputProps {
-  name: string
-  errors?: string[]
+  name: string;
+  errors?: string[];
 }
 
 export default function Input({
@@ -10,7 +10,7 @@ export default function Input({
   name,
   ...rest
 }: Readonly<InputProps & InputHTMLAttributes<HTMLInputElement>>) {
-  console.log({ rest })
+  //console.log({ rest })
   return (
     <div className="flex flex-col gap-2">
       <input
@@ -23,8 +23,8 @@ export default function Input({
           <span key={idx} className="font-medium text-red-500">
             {error}
           </span>
-        )
+        );
       })}
     </div>
-  )
+  );
 }

@@ -70,10 +70,7 @@ export default function ProductList({
       ) : (
         <span
           ref={trigger}
-          style={{
-            marginTop: `${page + 1 * 900}vh`, // 버튼을 멀리보내지 않으면 한번에 로딩 다됨
-          }}
-          className=" mb-96 text-sm font-semibold bg-orange-500 w-fit mx-auto px-3 py-2 rounded-md hover:opacity-90 active:scale-95 disabled:bg-neutral-400"
+          className="text-sm font-semibold bg-orange-500 w-fit mx-auto px-3 py-2 rounded-md hover:opacity-90 active:scale-95 disabled:bg-neutral-400"
         >
           {isLoading ? "Loading..." : "more+"}
         </span>
